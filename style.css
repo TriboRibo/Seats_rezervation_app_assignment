@@ -1,3 +1,27 @@
+body {
+  background-image: url("https://www.toptal.com/designers/subtlepatterns/uploads/beanstalk-dark.png");
+}
 
+.button {
+  border: 1px solid white;
+  color: white;
+}
+.button:hover {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.navigationBar {
+  border: 1px solid white;
+  padding: 10px;
+}
+
+.createNewMovie {
+  border: 1px solid white;
+  padding: 10px;
+  opacity: 0.9;
+  background-color: #0a53be;
+  color: white;
+}
 
 /*# sourceMappingURL=style.css.map */
