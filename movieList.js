@@ -19,13 +19,13 @@ export function checkUserRole(){
         }
     } else {
         console.log("no user is currently logged in")
-        // window.location.href = 'logInPage.html'
+        // window.location.href = 'index.html'
     }
 }
 export function logOutFromSession(){
     logOut.onclick = () => {
         localStorage.removeItem('userInfo');
-        window.location.href = 'logInPage.html'
+        window.location.href = 'index.html'
     }
 }
 function createNewMovieSession(){
