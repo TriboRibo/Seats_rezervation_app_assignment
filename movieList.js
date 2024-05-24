@@ -191,16 +191,28 @@ function createMovieElement(title, imageUrl, totalSeats) {
 
         const detailsSeatsEl = document.createElement('div')
         detailsSeatsEl.classList.add('detailSeats')
-        detailsSeatsEl.textContent = `Total seats: ${totalSeats}`
+        for (let i=0; i<totalSeats; i++) {
+            const seatDivEl = document.createElement('div')
+            seatDivEl.classList.add('seat')
+            seatDivEl.addEventListener('click', () => {
+                seatDivEl.classList.toggle('reserved')
+            })
+            detailsSeatsEl.appendChild(seatDivEl)
+        }
 
         const backBtn = document.createElement('div')
         backBtn.classList.add('button')
         backBtn.textContent = 'Back'
 
+        const reserveBtn = document.createElement('div')
+        reserveBtn.classList.add('button')
+        reserveBtn.textContent = 'Reserve'
+
         singleMovieContainer.appendChild(detailsSeatsEl)
         singleMovieContainer.appendChild(detailsTitleEl)
         singleMovieContainer.appendChild(detailsImageEl)
         singleMovieContainer.appendChild(backBtn)
+        singleMovieContainer.appendChild(reserveBtn)
 
         backBtn.addEventListener('click', () => {
             movieContainer.classList.remove('d-none')
