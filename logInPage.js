@@ -1,7 +1,7 @@
 //LogIn page
 const regularUser = document.getElementById('regularBtn');
 const adminUser = document.getElementById('adminBtn');
-
+//save user info on local storage
 function saveUser(role) {
     let user = {
         username: role === 'admin' ? "admin_user" : "regular_user",
@@ -20,9 +20,3 @@ export function goToAdminUserPages() {
         saveUser('admin')
     }
 }
-//oops
-
-
-
-
-

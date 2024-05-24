@@ -24,4 +24,47 @@ body {
   color: white;
 }
 
+.title {
+  font-weight: bold;
+  font-size: 30px;
+  color: white;
+}
+
+.detailTitle {
+  font-weight: bold;
+  font-size: 30px;
+  color: white;
+}
+
+.movie {
+  border: 1px solid white;
+  padding: 10px;
+}
+
+.movieImage {
+  background-image: url("");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 200px;
+  height: 200px;
+}
+
+.detailImage {
+  background-image: url("");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 200px;
+  height: 200px;
+}
+
+.seats {
+  color: white;
+}
+
+.detailSeats {
+  color: white;
+}
+
 /*# sourceMappingURL=style.css.map */

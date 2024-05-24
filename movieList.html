@@ -29,7 +29,7 @@
             <div class="errorTitleMsg"></div>
             <input type="url" id="imageUrl" placeholder="movie image/poster">
             <div class=errorUrlMsg></div>
-            <input type="number" id="totalSeats" min="0" max="30" placeholder="total seats">
+            <input type="number" id="totalSeats" min="1" max="30" placeholder="total seats">
             <div class="errorSeatsMsg"></div>
             <div class="d-flex justify-content-center">
                 <div class="button" id="createBtn">Create movie</div>
@@ -38,11 +38,8 @@
     </div>
     <div></div>
 </div>
-<div>
-    <div>Title</div>
-    <div>Image</div>
-    <div>Number of seats</div>
-</div>
+<div class="moviesContainer d-flex flex-wrap" id="moviesContainer"></div>
+<div class="detailsContainer d-none" id="detailsContainer"></div>
 <div class="invisible d-none">
     <div id="regularBtn"></div>
     <div id="adminBtn"></div>
