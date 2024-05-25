@@ -6,8 +6,9 @@ import {checkUserRole, logOutFromSession, checkInputs, displayMovies} from "./mo
 goToRegularUserPages();
 goToAdminUserPages();
 
+displayMovies()
 checkUserRole();
 logOutFromSession();
 checkInputs()
-displayMovies()
+
 

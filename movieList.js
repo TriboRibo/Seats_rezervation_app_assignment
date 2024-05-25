@@ -17,15 +17,15 @@ const singleMovieContainer = document.getElementById('detailsContainer')
 let moviesList = []
 
 export function displayMovies(){
-    const storedMovies = localStorage.getItem('moviesList');
+    const storedMovies = localStorage.getItem('moviesList')
     if (storedMovies){
-        moviesList = JSON.parse(storedMovies);
+        moviesList = JSON.parse(storedMovies)
     }
     window.onload = () => {
         moviesList.forEach((movie)=>{
-            const { title, imageUrl, totalSeats } = movie;
-            const movieEl = createMovieElement(title, imageUrl, totalSeats);
-            movieContainer.appendChild(movieEl);
+            const { title, imageUrl, totalSeats } = movie
+            const movieEl = createMovieElement(movie)
+            movieContainer.appendChild(movieEl)
             console.log(movie)
         })
         createNewMovie()
@@ -34,7 +34,7 @@ export function displayMovies(){
 
 //check user role
 export function checkUserRole() {
-    let userInfo = localStorage.getItem('userInfo');
+    let userInfo = localStorage.getItem('userInfo')
 
     if (userInfo) {
         userInfo = JSON.parse(userInfo);
@@ -55,17 +55,17 @@ export function checkUserRole() {
 }
 //additional function for check if user admin
 function isAdminUser() {
-    let userInfo = localStorage.getItem('userInfo');
+    let userInfo = localStorage.getItem('userInfo')
     if (userInfo) {
-        userInfo = JSON.parse(userInfo);
-        return userInfo.role === 'admin';
+        userInfo = JSON.parse(userInfo)
+        return userInfo.role === 'admin'
     }
-    return false
+    return false;
 }
 //log out
 export function logOutFromSession() {
     logOut.onclick = () => {
-        localStorage.removeItem('userInfo');
+        localStorage.removeItem('userInfo')
         window.location.href = 'index.html'
     }
 }
@@ -102,7 +102,7 @@ function checkSeatNumber() {
         errorSeatsMsg.textContent = '1-30'
         return true
     } else {
-        errorSeatsMsg.textContent = 'Seats must be between 0 and 30'
+        errorSeatsMsg.textContent = 'Seats must be between 1 and 30'
         return false
     }
 }
@@ -112,7 +112,9 @@ export function checkInputs() {
     const isSeatsValid = checkSeatNumber()
     if (isTitleValid && isUrlValid && isSeatsValid) {
         createMovieBtn.classList.add('enabled')
-        createMovieBtn.addEventListener('click', createNewMovie)
+        if (!createMovieBtn.onclick){
+            createMovieBtn.addEventListener('click', createNewMovie)
+        }
     } else {
         createMovieBtn.classList.remove('enabled')
         createMovieBtn.removeEventListener('click', createNewMovie)
@@ -123,40 +125,26 @@ function generateId() {
     return '' + Math.random().toString(36).substr(2, 9)
 }
 //first check if admin user so then I see a creator menu
-function createNewMovie() {
-    if (!createMovieBtn.classList.contains('enabled')) return;
-
-    const title = titleInput.value.trim();
-    const imageUrl = imageInput.value;
-    const totalSeats = numberOfSeatsInput.value;
-
-    const movieId = generateId();
-    const movie = { id: movieId, title, imageUrl, totalSeats };
-
-    moviesList.push(movie);
-    localStorage.setItem('moviesList', JSON.stringify(moviesList));
-    alert('Movie created successfully!');
-    window.location.reload()
-}
-function createDeleteButton(title, imageUrl, totalSeats){
+function createDeleteButton(title, imageUrl, totalSeats, movieEl){
     const deleteBtnEl = document.createElement('div')
     deleteBtnEl.classList.add('button')
     deleteBtnEl.textContent = 'Delete'
 
-    deleteBtnEl.addEventListener('click', function() {
-        const movieEl = deleteBtnEl.parentElement
-        movieEl.remove()
+    deleteBtnEl.addEventListener('click', function(event) {
+        event.stopPropagation()
 
         const index = moviesList.findIndex(movie => movie.title === title && movie.imageUrl === imageUrl && movie.totalSeats === totalSeats)
-        if (index !== -1) {
+        if (index !== -1){
             moviesList.splice(index, 1)
             localStorage.setItem('moviesList', JSON.stringify(moviesList))
+            // movieEl.remove()
+            window.location.reload()
         }
-    });
-
+    })
     return deleteBtnEl
 }
-function createMovieElement(title, imageUrl, totalSeats) {
+function createMovieElement({id, title, imageUrl, totalSeats, reservedSeats = []}) {
+
     const movieEl = document.createElement('div')
     movieEl.classList.add('movie')
 
@@ -178,50 +166,7 @@ function createMovieElement(title, imageUrl, totalSeats) {
     }
 
     movieEl.addEventListener('click', () => {
-        movieContainer.classList.add('d-none')
-        singleMovieContainer.classList.remove('d-none')
-
-        const detailsTitleEl = document.createElement('div')
-        detailsTitleEl.classList.add('detailTitle')
-        detailsTitleEl.textContent = title
-
-        const detailsImageEl = document.createElement('div')
-        detailsImageEl.classList.add('detailImage')
-        detailsTitleEl.style.backgroundImage = `url(${imageUrl})`
-
-        const detailsSeatsEl = document.createElement('div')
-        detailsSeatsEl.classList.add('detailSeats')
-        for (let i=0; i<totalSeats; i++) {
-            const seatDivEl = document.createElement('div')
-            seatDivEl.classList.add('seat')
-            seatDivEl.addEventListener('click', () => {
-                seatDivEl.classList.toggle('reserved')
-            })
-            detailsSeatsEl.appendChild(seatDivEl)
-        }
-
-        const backBtn = document.createElement('div')
-        backBtn.classList.add('button')
-        backBtn.textContent = 'Back'
-
-        const reserveBtn = document.createElement('div')
-        reserveBtn.classList.add('button')
-        reserveBtn.textContent = 'Reserve'
-
-        singleMovieContainer.appendChild(detailsSeatsEl)
-        singleMovieContainer.appendChild(detailsTitleEl)
-        singleMovieContainer.appendChild(detailsImageEl)
-        singleMovieContainer.appendChild(backBtn)
-        singleMovieContainer.appendChild(reserveBtn)
-
-        backBtn.addEventListener('click', () => {
-            movieContainer.classList.remove('d-none')
-            singleMovieContainer.classList.add('d-none')
-
-            while (singleMovieContainer.firstChild){
-                singleMovieContainer.removeChild(singleMovieContainer.firstChild)
-            }
-        })
+        showMovieDetails({id, title, imageUrl, totalSeats, reservedSeats})
     })
 
     movieEl.appendChild(titleEl)
@@ -230,6 +175,100 @@ function createMovieElement(title, imageUrl, totalSeats) {
 
     return movieEl
 }
+
+function showMovieDetails(movie){
+    const {id, title, imageUrl, totalSeats, reservedSeats = []} = movie
+
+    movieContainer.classList.add('d-none')
+    singleMovieContainer.classList.remove('d-none')
+
+    singleMovieContainer.innerHTML = ''
+
+    const detailsTitleEl = document.createElement('div')
+    detailsTitleEl.classList.add('detailTitle')
+    detailsTitleEl.textContent = title
+
+    const detailsImageEl = document.createElement('div')
+    detailsImageEl.classList.add('detailImage')
+    detailsImageEl.style.backgroundImage = `url(${imageUrl})`
+
+    const detailsSeatsEl = document.createElement('div')
+    detailsSeatsEl.classList.add('detailSeats')
+
+    for (let i=0; i < totalSeats; i++) {
+        const seatDivEl = document.createElement('div')
+        seatDivEl.classList.add('seat')
+        if (reservedSeats.includes(i)){
+            seatDivEl.classList.add('reserved')
+        }
+        seatDivEl.addEventListener('click', () => {
+            seatDivEl.classList.toggle('reserved')
+        })
+        detailsSeatsEl.appendChild(seatDivEl)
+    }
+    const backBtn = document.createElement('div')
+    backBtn.classList.add('button')
+    backBtn.textContent = 'Back'
+    backBtn.addEventListener('click', () => {
+        movieContainer.classList.remove('d-none')
+        singleMovieContainer.classList.add('d-none')
+        singleMovieContainer.innerHTML = ''
+    })
+
+    const reserveBtn = document.createElement('div')
+    reserveBtn.classList.add('button')
+    reserveBtn.textContent = 'Reserve'
+    reserveBtn.addEventListener('click', () => {
+        reserveSeats(id, detailsSeatsEl)
+    })
+
+    singleMovieContainer.appendChild(detailsTitleEl)
+    singleMovieContainer.appendChild(detailsImageEl)
+    singleMovieContainer.appendChild(detailsSeatsEl)
+    singleMovieContainer.appendChild(backBtn)
+    singleMovieContainer.appendChild(reserveBtn)
+}
+
+function reserveSeats (movieId, seatsContainer) {
+    const reservedSeats = []
+    seatsContainer.querySelectorAll('.seat').forEach((seat, index) => {
+        if (seat.classList.contains('reserved')) {
+            reservedSeats.push(index)
+        }
+    })
+
+    const storedMovies = JSON.parse(localStorage.getItem('moviesList')) || []
+    const movieIndex = storedMovies.findIndex(movie => movie.id === movieId)
+
+    if (movieIndex > -1) {
+        storedMovies[movieIndex].reservedSeats = reservedSeats
+        localStorage.setItem('moviesList', JSON.stringify(storedMovies))
+    }
+}
+function createNewMovie() {
+    if (!createMovieBtn.classList.contains('enabled')) return;
+
+    const title = titleInput.value.trim();
+    const imageUrl = imageInput.value;
+    const totalSeats = parseInt(numberOfSeatsInput.value, 10);
+
+    const movieId = generateId();
+    const movie = { id: movieId, title, imageUrl, totalSeats, reserveSeats: [] };
+
+    moviesList.push(movie);
+    localStorage.setItem('moviesList', JSON.stringify(moviesList));
+    alert('Movie created successfully!');
+    window.location.reload()
+}
+
+function initializeMovieList(){
+    moviesList.forEach(movie => {
+        const movieEl = createMovieElement(movie)
+        movieContainer.appendChild(movieEl)
+    })
+}
+
+initializeMovieList()
 
 titleInput.addEventListener('input', checkInputs)
 imageInput.addEventListener('input', checkInputs)
