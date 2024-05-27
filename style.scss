@@ -1,5 +1,6 @@
 body{
   background-image: url("https://www.toptal.com/designers/subtlepatterns/uploads/beanstalk-dark.png");
+  user-select: none;
 }
 
 .button {
@@ -35,6 +36,7 @@ body{
 .movie {
   border: 1px solid white;
   padding: 10px;
+
 }
 .movieImage {
   background-image: url("");
@@ -54,9 +56,14 @@ body{
 }
 .seats {
   color: white;
+  &:hover{
+    cursor: pointer;
+  }
 }
 .detailSeats {
   color: white;
+  display: flex;
+  padding: 10px;
 }
 .seat{
   border: 1px solid white;
@@ -64,7 +71,12 @@ body{
   color: white;
   height: 5px;
   width: 5px;
+  margin: 3px;
+  user-select: none;
 }
 .reserved{
   background-color: #0a53be;
+}
+.availableSeats{
+  color: white;
 }

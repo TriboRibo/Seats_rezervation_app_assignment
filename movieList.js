@@ -23,7 +23,6 @@ export function displayMovies(){
     }
     window.onload = () => {
         moviesList.forEach((movie)=>{
-            const { title, imageUrl, totalSeats } = movie
             const movieEl = createMovieElement(movie)
             movieContainer.appendChild(movieEl)
             console.log(movie)
@@ -125,24 +124,6 @@ function generateId() {
     return '' + Math.random().toString(36).substr(2, 9)
 }
 //first check if admin user so then I see a creator menu
-function createDeleteButton(title, imageUrl, totalSeats, movieEl){
-    const deleteBtnEl = document.createElement('div')
-    deleteBtnEl.classList.add('button')
-    deleteBtnEl.textContent = 'Delete'
-
-    deleteBtnEl.addEventListener('click', function(event) {
-        event.stopPropagation()
-
-        const index = moviesList.findIndex(movie => movie.title === title && movie.imageUrl === imageUrl && movie.totalSeats === totalSeats)
-        if (index !== -1){
-            moviesList.splice(index, 1)
-            localStorage.setItem('moviesList', JSON.stringify(moviesList))
-            // movieEl.remove()
-            window.location.reload()
-        }
-    })
-    return deleteBtnEl
-}
 function createMovieElement({id, title, imageUrl, totalSeats, reservedSeats = []}) {
 
     const movieEl = document.createElement('div')
@@ -176,6 +157,25 @@ function createMovieElement({id, title, imageUrl, totalSeats, reservedSeats = []
     return movieEl
 }
 
+function createDeleteButton(title, imageUrl, totalSeats){
+    const deleteBtnEl = document.createElement('div')
+    deleteBtnEl.classList.add('button')
+    deleteBtnEl.textContent = 'Delete'
+
+    deleteBtnEl.addEventListener('click', function(event) {
+        event.stopPropagation()
+
+        const index = moviesList.findIndex(movie => movie.title === title && movie.imageUrl === imageUrl && movie.totalSeats === totalSeats)
+        if (index !== -1){
+            moviesList.splice(index, 1)
+            localStorage.setItem('moviesList', JSON.stringify(moviesList))
+            // movieEl.remove()
+            window.location.reload()
+        }
+    })
+    return deleteBtnEl
+}
+
 function showMovieDetails(movie){
     const {id, title, imageUrl, totalSeats, reservedSeats = []} = movie
 
@@ -195,6 +195,10 @@ function showMovieDetails(movie){
     const detailsSeatsEl = document.createElement('div')
     detailsSeatsEl.classList.add('detailSeats')
 
+    const availableSeatsEl = document.createElement('div')
+    availableSeatsEl.classList.add('availableSeats')
+    availableSeatsEl.textContent = `Available seats: ${totalSeats - reservedSeats.length}`
+
     for (let i=0; i < totalSeats; i++) {
         const seatDivEl = document.createElement('div')
         seatDivEl.classList.add('seat')
@@ -203,6 +207,7 @@ function showMovieDetails(movie){
         }
         seatDivEl.addEventListener('click', () => {
             seatDivEl.classList.toggle('reserved')
+            updateAvailableSeats(detailsSeatsEl, availableSeatsEl, totalSeats)
         })
         detailsSeatsEl.appendChild(seatDivEl)
     }
@@ -220,13 +225,25 @@ function showMovieDetails(movie){
     reserveBtn.textContent = 'Reserve'
     reserveBtn.addEventListener('click', () => {
         reserveSeats(id, detailsSeatsEl)
+        updateAvailableSeats(detailsSeatsEl, availableSeatsEl, totalSeats)
     })
 
     singleMovieContainer.appendChild(detailsTitleEl)
     singleMovieContainer.appendChild(detailsImageEl)
     singleMovieContainer.appendChild(detailsSeatsEl)
+    singleMovieContainer.appendChild(availableSeatsEl)
     singleMovieContainer.appendChild(backBtn)
     singleMovieContainer.appendChild(reserveBtn)
+}
+
+function updateAvailableSeats(seatsContainer, availableSeatsEl, totalSeats) {
+    const reservedSeats =[]
+    seatsContainer.querySelectorAll('.seat').forEach((seat, index) => {
+        if (seat.classList.contains('reserved')){
+            reservedSeats.push(index)
+        }
+    })
+    availableSeatsEl.textContent = `Available seats: ${totalSeats - reservedSeats.length}`
 }
 
 function reserveSeats (movieId, seatsContainer) {
@@ -237,12 +254,12 @@ function reserveSeats (movieId, seatsContainer) {
         }
     })
 
-    const storedMovies = JSON.parse(localStorage.getItem('moviesList')) || []
-    const movieIndex = storedMovies.findIndex(movie => movie.id === movieId)
+    // const storedMovies = JSON.parse(localStorage.getItem('moviesList')) || []
+    const movieIndex = moviesList.findIndex(movie => movie.id === movieId)
 
     if (movieIndex > -1) {
-        storedMovies[movieIndex].reservedSeats = reservedSeats
-        localStorage.setItem('moviesList', JSON.stringify(storedMovies))
+        moviesList[movieIndex].reservedSeats = reservedSeats
+        localStorage.setItem('moviesList', JSON.stringify(moviesList))
     }
 }
 function createNewMovie() {
@@ -253,7 +270,7 @@ function createNewMovie() {
     const totalSeats = parseInt(numberOfSeatsInput.value, 10);
 
     const movieId = generateId();
-    const movie = { id: movieId, title, imageUrl, totalSeats, reserveSeats: [] };
+    const movie = { id: movieId, title, imageUrl, totalSeats, reservedSeats: [] };
 
     moviesList.push(movie);
     localStorage.setItem('moviesList', JSON.stringify(moviesList));
